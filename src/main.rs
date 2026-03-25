@@ -105,14 +105,7 @@ impl EventHandler for Handler {
             }
 
             let builder = CreateInteractionResponse::Modal(
-                CreateModal::new(
-                    "register",
-                    format!(
-                        "Create your account",
-                        CONFIG.get().unwrap().homeserver_domain
-                    ),
-                )
-                .components(vec![
+                CreateModal::new("register", "Create your account").components(vec![
                     CreateActionRow::InputText(CreateInputText::new(
                         InputTextStyle::Paragraph,
                         "Choose your username, this cannot be changed",
