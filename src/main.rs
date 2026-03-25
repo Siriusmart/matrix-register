@@ -108,7 +108,7 @@ impl EventHandler for Handler {
                 CreateModal::new(
                     "register",
                     format!(
-                        "Your full user ID will be @username:{}",
+                        "Create your account",
                         CONFIG.get().unwrap().homeserver_domain
                     ),
                 )
