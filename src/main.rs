@@ -115,12 +115,12 @@ impl EventHandler for Handler {
                 .components(vec![
                     CreateActionRow::InputText(CreateInputText::new(
                         InputTextStyle::Paragraph,
-                        "Choose your username, this cannot be change once the account is created.",
+                        "Choose your username, this cannot be changed",
                         "username",
                     )),
                     CreateActionRow::InputText(CreateInputText::new(
                         InputTextStyle::Paragraph,
-                        "Choose a secure password, this can be changed in the future.",
+                        "Choose a secure password, this can be changed",
                         "password",
                     )),
                 ]),
