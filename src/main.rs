@@ -134,12 +134,14 @@ impl EventHandler for Handler {
                 .create_response(
                     &ctx.http,
                     CreateInteractionResponse::Message(
-                        CreateInteractionResponseMessage::new().embed(
-                            CreateEmbed::new()
-                                .title("Processing your request")
-                                .colour(Colour::from_rgb(0, 25, 255))
-                                .description("Waiting for Matrix homeserver to respond..."),
-                        ),
+                        CreateInteractionResponseMessage::new()
+                            .embed(
+                                CreateEmbed::new()
+                                    .title("Processing your request")
+                                    .colour(Colour::from_rgb(210, 252, 22))
+                                    .description("Waiting for Matrix homeserver to respond..."),
+                            )
+                            .ephemeral(true),
                     ),
                 )
                 .await;
