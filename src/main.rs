@@ -105,18 +105,19 @@ impl EventHandler for Handler {
             }
 
             let builder = CreateInteractionResponse::Modal(
-                CreateModal::new("register", "Create your account (ignore the warning pls)").components(vec![
-                    CreateActionRow::InputText(CreateInputText::new(
-                        InputTextStyle::Paragraph,
-                        "Choose your username, this cannot be changed",
-                        "username",
-                    )),
-                    CreateActionRow::InputText(CreateInputText::new(
-                        InputTextStyle::Paragraph,
-                        "Choose a secure password, this can be changed",
-                        "password",
-                    )),
-                ]),
+                CreateModal::new("register", "Create your account (ignore the warning pls)")
+                    .components(vec![
+                        CreateActionRow::InputText(CreateInputText::new(
+                            InputTextStyle::Short,
+                            "Choose your username, this cannot be changed",
+                            "username",
+                        )),
+                        CreateActionRow::InputText(CreateInputText::new(
+                            InputTextStyle::Short,
+                            "Choose a secure password, this can be changed",
+                            "password",
+                        )),
+                    ]),
             );
 
             if let Err(why) = interaction.create_response(&ctx.http, builder).await {
