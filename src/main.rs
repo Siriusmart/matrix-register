@@ -76,8 +76,6 @@ async fn register(username: String, password: String) -> Result<Success, String>
 impl EventHandler for Handler {
     async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
         if let Interaction::Command(command) = &interaction {
-            println!("Received command interaction: {command:#?}");
-
             if command.data.name.as_str() != "matrix" {
                 return;
             }
