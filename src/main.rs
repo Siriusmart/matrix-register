@@ -105,7 +105,7 @@ impl EventHandler for Handler {
             }
 
             let builder = CreateInteractionResponse::Modal(
-                CreateModal::new("register", "Create your account").components(vec![
+                CreateModal::new("register", "Create your account (ignore the warning pls)").components(vec![
                     CreateActionRow::InputText(CreateInputText::new(
                         InputTextStyle::Paragraph,
                         "Choose your username, this cannot be changed",
