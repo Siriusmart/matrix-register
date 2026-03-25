@@ -130,6 +130,20 @@ impl EventHandler for Handler {
                 return;
             }
 
+            let _ = modal
+                .create_response(
+                    &ctx.http,
+                    CreateInteractionResponse::Message(
+                        CreateInteractionResponseMessage::new().embed(
+                            CreateEmbed::new()
+                                .title("Processing your request")
+                                .colour(Colour::from_rgb(0, 25, 255))
+                                .description("Waiting for Matrix homeserver to respond..."),
+                        ),
+                    ),
+                )
+                .await;
+
             let ActionRowComponent::InputText(username) = &modal.data.components[0].components[0]
             else {
                 return;
@@ -157,6 +171,7 @@ impl EventHandler for Handler {
                         CreateMessage::new().embed(
                             CreateEmbed::new()
                                 .title("Account Created")
+                                .colour(Colour::from_rgb(22, 252, 80))
                                 .description(format!(
                                     "Homeserver: {homeserver}\nUsername: `{username}`\nPassword: ||`{password}`||",
                                 )).field("What's next?", format!("Login to your account on [Cinny](https://app.cinny.in/login/{homeserver}), have fun!") , false),
