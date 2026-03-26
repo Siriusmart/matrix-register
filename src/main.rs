@@ -204,16 +204,20 @@ impl EventHandler for Handler {
 
         for guild_id in CONFIG.get().unwrap().guilds_ids.iter().copied() {
             let guild_id = GuildId::new(guild_id);
-            guild_id
-                .set_commands(
-                    &ctx.http,
-                    vec![
-                        CreateCommand::new("matrix")
-                            .description("Sends the Matrix invite message."),
-                    ],
-                )
-                .await
-                .unwrap();
+            if env::var("UNREGISTER_COMMANDS").is_ok() {
+                guild_id.set_commands(&ctx.http, vec![]).await.unwrap();
+            } else {
+                guild_id
+                    .set_commands(
+                        &ctx.http,
+                        vec![
+                            CreateCommand::new("matrix")
+                                .description("Sends the Matrix invite message."),
+                        ],
+                    )
+                    .await
+                    .unwrap();
+            }
         }
 
         println!("Commands registered")
