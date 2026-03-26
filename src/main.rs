@@ -48,7 +48,7 @@ async fn register(username: String, password: String) -> Result<Success, String>
     if !password.is_empty() {
         request.password = Some(password.clone());
     }
-    request.username = Some(username);
+    request.username = Some(username.clone());
     request.kind = register::RegistrationKind::User;
     request.auth = CONFIG
         .get()
@@ -59,14 +59,14 @@ async fn register(username: String, password: String) -> Result<Success, String>
             uiaa::AuthData::RegistrationToken(uiaa::RegistrationToken::new(token.clone()))
         });
 
-    let res = client
+    let _ = client
         .matrix_auth()
         .register(request)
         .await
         .map_err(|e| e.to_string())?;
 
     Ok(Success {
-        username: res.user_id.to_string(),
+        username,
         homeserver: CONFIG.get().unwrap().homeserver_domain.clone(),
         password,
     })
@@ -173,7 +173,7 @@ impl EventHandler for Handler {
                                 .title("Account Created")
                                 .colour(Colour::from_rgb(22, 252, 80))
                                 .description(format!(
-                                    "Homeserver: {homeserver}\nUsername: `{username}`\nPassword: ||`{password}`||",
+                                    "Homeserver: `{homeserver}`\nUsername: `{username}`\nPassword: ||`{password}`||",
                                 )).field("What's next?", format!("Login to your account on [Cinny](https://app.cinny.in/login/{homeserver}), have fun!") , false),
                         ),
                     ).await;
