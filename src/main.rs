@@ -220,7 +220,11 @@ impl EventHandler for Handler {
             }
         }
 
-        println!("Commands registered")
+        if env::var("UNREGISTER_COMMANDS").is_ok() {
+            println!("Commands unregistered, please stop the bot")
+        } else {
+            println!("Commands registered")
+        }
     }
 }
 
