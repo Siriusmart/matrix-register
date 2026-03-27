@@ -1,4 +1,4 @@
-use std::{env, fs, sync::OnceLock};
+use std::{collections::HashSet, env, fs, sync::OnceLock};
 
 use matrix_sdk::ruma::api::client::{account::register, uiaa};
 use serde::Deserialize;
@@ -8,7 +8,7 @@ use serenity::{
         ActionRowComponent, Colour, ComponentInteractionDataKind, Context, CreateActionRow,
         CreateButton, CreateCommand, CreateEmbed, CreateEmbedFooter, CreateInputText,
         CreateInteractionResponse, CreateInteractionResponseMessage, CreateMessage, CreateModal,
-        EventHandler, GatewayIntents, GuildId, InputTextStyle, Interaction, Ready,
+        EventHandler, GatewayIntents, GuildId, InputTextStyle, Interaction, Member, Ready,
     },
     async_trait,
 };
@@ -24,7 +24,8 @@ struct Config {
     #[serde(rename = "registration-token")]
     registration_token: Option<String>,
     #[serde(rename = "guild-ids")]
-    guilds_ids: Vec<u64>,
+    guilds_ids: HashSet<GuildId>,
+    message: String,
 }
 
 struct Handler;
@@ -74,6 +75,28 @@ async fn register(username: String, password: String) -> Result<Success, String>
 
 #[async_trait]
 impl EventHandler for Handler {
+    async fn guild_member_addition(&self, ctx: Context, new_member: Member) {
+        if !CONFIG
+            .get()
+            .unwrap()
+            .guilds_ids
+            .contains(&new_member.guild_id)
+        {
+            return;
+        }
+
+        let builder = CreateMessage::new()
+            .embed(
+                CreateEmbed::new()
+                    .colour(Colour::from_rgb(0, 25, 255))
+                    .title("You are invited to join our Matrix homeserver!")
+                    .description(CONFIG.get().unwrap().message.clone()),
+            )
+            .button(CreateButton::new("accept_invite").label("Accept invite"));
+
+        let _ = new_member.user.direct_message(&ctx.http, builder).await;
+    }
+
     async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
         if let Interaction::Command(command) = &interaction {
             if command.data.name.as_str() != "matrix" {
@@ -81,13 +104,15 @@ impl EventHandler for Handler {
             }
 
             let builder = CreateInteractionResponse::Message(
-                    CreateInteractionResponseMessage::new()
-                    .embed(CreateEmbed::new()
-                        .colour(Colour::from_rgb(0, 25, 255))
-                        .title("You are invited to join our Matrix homeserver!")
-                        .description("Matrix is simple chat app powered by a decentralised protocol. If you join our homeserver, you can talk to anyone using Matrix - include people from other homeservers!"))
-                    .button(CreateButton::new("accept_invite").label("Accept invite"))
-                );
+                CreateInteractionResponseMessage::new()
+                    .embed(
+                        CreateEmbed::new()
+                            .colour(Colour::from_rgb(0, 25, 255))
+                            .title("You are invited to join our Matrix homeserver!")
+                            .description(CONFIG.get().unwrap().message.clone()),
+                    )
+                    .button(CreateButton::new("accept_invite").label("Accept invite")),
+            );
             if let Err(why) = command.create_response(&ctx.http, builder).await {
                 println!("Cannot respond to slash command: {why}");
             }
@@ -203,7 +228,6 @@ impl EventHandler for Handler {
         println!("{} is connected!", ready.user.name);
 
         for guild_id in CONFIG.get().unwrap().guilds_ids.iter().copied() {
-            let guild_id = GuildId::new(guild_id);
             if env::var("UNREGISTER_COMMANDS").is_ok() {
                 guild_id.set_commands(&ctx.http, vec![]).await.unwrap();
             } else {
