@@ -266,7 +266,7 @@ async fn main() {
     // Build our client.
     let mut client = Client::builder(
         CONFIG.get().unwrap().discord_token.clone(),
-        GatewayIntents::non_privileged(),
+        GatewayIntents::all(),
     )
     .event_handler(Handler)
     .await
