@@ -76,7 +76,6 @@ async fn register(username: String, password: String) -> Result<Success, String>
 #[async_trait]
 impl EventHandler for Handler {
     async fn guild_member_addition(&self, ctx: Context, new_member: Member) {
-        println!("one");
         if !CONFIG
             .get()
             .unwrap()
@@ -85,7 +84,6 @@ impl EventHandler for Handler {
         {
             return;
         }
-        println!("two");
 
         let builder = CreateMessage::new()
             .embed(
@@ -96,11 +94,7 @@ impl EventHandler for Handler {
             )
             .button(CreateButton::new("accept_invite").label("Accept invite"));
 
-        new_member
-            .user
-            .direct_message(&ctx.http, builder)
-            .await
-            .unwrap();
+        let _ = new_member.user.direct_message(&ctx.http, builder).await;
     }
 
     async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
